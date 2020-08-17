@@ -1,0 +1,27 @@
+<p>{{ graphic }}</p>
+<p>{{ getStatus() }}</p>
+
+<div class="container">
+  <div class="row">
+    <div class="col-xs-6">
+      <input type="text"
+             class="form-control"
+             (input)="onUpdateNodeName($event)"
+      >
+    </div>
+    <div class="col-xs-6">
+      <input type="text"
+             class="form-control"
+             [(ngModel)]="nodeName"
+      >
+    </div>
+    <button class="btn btn-primary"
+            (click)="onCreateNode()"
+            [disabled]="!allowNewNode">
+      Add node
+    </button>
+  </div>
+</div>
+
+
+
