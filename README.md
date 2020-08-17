@@ -30,4 +30,5 @@ To get more help on the Angular CLI use `ng help` or go check out the [Angular C
 sudo npm install -g angular-cli-ghpages
 
 ng build --prod --base-href "https://BernatIV.github.io/research-tree-app/"
+
 sudo ngh --dir dist/research-tree-app
