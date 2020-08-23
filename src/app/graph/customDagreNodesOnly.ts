@@ -56,6 +56,8 @@ export class DagreNodesOnlyLayout implements Layout {
   dagreEdges: any;
 
   public run(graph: Graph): Graph {
+    console.log('Hola estic passant per run');
+
     this.createDagreGraph(graph);
     dagre.layout(this.dagreGraph);
 
@@ -81,6 +83,8 @@ export class DagreNodesOnlyLayout implements Layout {
   }
 
   public updateEdge(graph: Graph, edge: Edge): Graph {
+    console.log('Hola estic passant per updateEdge');
+
     const sourceNode = graph.nodes.find(n => n.id === edge.source);
     const targetNode = graph.nodes.find(n => n.id === edge.target);
     const rankAxis: 'x' | 'y' = this.settings.orientation === 'BT' || this.settings.orientation === 'TB' ? 'y' : 'x';
@@ -120,6 +124,8 @@ export class DagreNodesOnlyLayout implements Layout {
   }
 
   public createDagreGraph(graph: Graph): any {
+    console.log('Hola estic passant per createDagreGraph');
+
     const settings = Object.assign({}, this.defaultSettings, this.settings);
     this.dagreGraph = new dagre.graphlib.Graph({ compound: settings.compound, multigraph: settings.multigraph });
     this.dagreGraph.setGraph({

@@ -1,9 +1,9 @@
+<!-- a dins de ngx-graph [curve]="curve"-->
 <ngx-graph
   [view]="[1100, 800]"
   [showMiniMap]="true"
   [links]="links"
   [nodes]="nodes"
-  [curve]="curve"
   [layout]="layout"
   [nodeWidth]="150"
   [nodeHeight]="100"
@@ -23,7 +23,7 @@
         <xhtml:div class="cardContainer" xmlns="http://www.w3.org/1999/xhtml" [ngStyle]="getStyles(node)">
           <label class="name">{{ node.label }}</label>
           <label>{{ node.data.role }}</label>
-          <label>{{ node.data.office }}</label>
+          <label>{{ node.data.llocNaixement }}</label>
         </xhtml:div>
       </svg:foreignObject>
     </svg:g>
@@ -45,7 +45,7 @@
     </svg:g>
     <svg:g
       class="linkMidpoint"
-      *ngIf="link.midPoint"
+      *ngIf="link.midPoint && link.data.isCoupleRelation"
       [attr.transform]="'translate(' + link.midPoint.x + ',' + link.midPoint.y + ')'"
     >
       <ellipse rx="30" ry="10" />
@@ -53,14 +53,3 @@
     </svg:g>
   </ng-template>
 </ngx-graph>
-
-
-
-<!--<ngx-graph-->
-<!--  class="chart-container"-->
-<!--  [view]="[1100, 800]"-->
-<!--  [showMiniMap]="true"-->
-<!--  [links]="links"-->
-<!--  [nodes]="nodes"-->
-<!--&gt;-->
-<!--</ngx-graph>-->
