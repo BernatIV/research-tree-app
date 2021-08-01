@@ -46,7 +46,7 @@ export class DagreNodesOnlyLayout implements Layout {
     rankPadding: 100,
     nodePadding: 50,
     curveDistance: 20,
-    multigraph: false,
+    multigraph: false, // si es true les línies de relacions no poden estar superposades
     compound: true
   };
   settings: DagreNodesOnlySettings = {};
@@ -56,7 +56,42 @@ export class DagreNodesOnlyLayout implements Layout {
   dagreEdges: any;
 
   public run(graph: Graph): Graph {
-    console.log('Hola estic passant per run');
+    // modificar posició de node couple?
+
+    let couples = new Map();
+
+    graph.edges.forEach(edge => {
+      if (edge.data.isCoupleRelation) {
+        console.log('hash: ' + edge.source + ' and ' + edge.target);
+
+        if (couples.get(edge.target) !== edge.source) {
+          couples.set(edge.source, edge.target);
+        }
+
+        // then we want to keep this id and change the X position of this ID
+      }
+    });
+
+    console.log('couples map ---> ', couples);
+
+    // iterem el map
+    couples.forEach((value, key, map) => {
+      console.log('key and value: ' + key + ' ' + value);
+
+      const node = graph.nodes.find(node => node.id === value);
+      const nodeOrigin = graph.nodes.find(node => node.id === key);
+      node.position.x = nodeOrigin.position.x;
+
+      // graph.nodes.forEach(node => {
+      //   if (node.id === value) {
+      //     node.position.x = nodeOrigin.position.x;
+      //   }
+      // });
+    });
+
+
+
+    // ----------------
 
     this.createDagreGraph(graph);
     dagre.layout(this.dagreGraph);
@@ -66,9 +101,33 @@ export class DagreNodesOnlyLayout implements Layout {
     for (const dagreNodeId in this.dagreGraph._nodes) {
       const dagreNode = this.dagreGraph._nodes[dagreNodeId];
       const node = graph.nodes.find(n => n.id === dagreNode.id);
+
+      //--- Canvi posició X
+      let posX = dagreNode.x; // Les x son les y i al revés, perq el layout està vertical
+      if (dagreNode.id === '7') {
+        const nodeOrigin = graph.nodes.find(n => n.id === '1');
+        const couplePos = nodeOrigin.position.x;
+        posX = couplePos - 250;
+      }
+
+      //--- Canvi posició Y
+      let posY = dagreNode.y;
+      if (dagreNode.id === '7') {
+        const nodeOrigin = graph.nodes.find(n => n.id === '1');
+        const couplePos = nodeOrigin.position.y;
+        posY = couplePos;
+      }
+
+      // ----- Fi canvi
+
+      // Notes: lo ideal, realment, seria tenir més d'un graph. S'ha de poder fer.
+      // Un graph per la família de la Iaia Pilar, un altre per la família del Josep.
+      // Amb una fletxa a part, connectar la Pilar i el Josep, però també que quan cliquis un germà de la pilar
+      // s'esborri la família del josep i aparegui la família de la parella d'aquesta germana.
+
       node.position = {
-        x: dagreNode.x,
-        y: dagreNode.y
+        x: posX, //dagreNode.x,
+        y: posY // dagreNode.y
       };
       node.dimension = {
         width: dagreNode.width,
@@ -87,7 +146,17 @@ export class DagreNodesOnlyLayout implements Layout {
 
     const sourceNode = graph.nodes.find(n => n.id === edge.source);
     const targetNode = graph.nodes.find(n => n.id === edge.target);
-    const rankAxis: 'x' | 'y' = this.settings.orientation === 'BT' || this.settings.orientation === 'TB' ? 'y' : 'x';
+
+    let ra: 'x' | 'y' = this.settings.orientation === 'BT' || this.settings.orientation === 'TB' ? 'y' : 'x';
+    if (edge.data.isCoupleRelation) { // TODO: també s'ha de desactivar que un es situï per sobre de l'altre en una relació
+      if (ra === 'y') {
+        ra = 'x';
+      } else {
+        ra = 'y';
+      }
+      // targetNode.position.y = sourceNode.position.y - 60;
+    }
+    const rankAxis: 'x' | 'y' = ra;
     const orderAxis: 'x' | 'y' = rankAxis === 'y' ? 'x' : 'y';
     const rankDimension = rankAxis === 'y' ? 'height' : 'width';
     // determine new arrow position
@@ -167,6 +236,7 @@ export class DagreNodesOnlyLayout implements Layout {
       }
       return newLink;
     });
+    console.log('Print dagreeEdges: ', ...this.dagreEdges);
 
     for (const node of this.dagreNodes) {
       if (!node.width) {
@@ -175,6 +245,12 @@ export class DagreNodesOnlyLayout implements Layout {
       if (!node.height) {
         node.height = 30;
       }
+
+      // if (node.id === '7') { // és un dels ids amb couple relation (construiré un array amb tots els targets couple relation)
+      //   // node.x = node.x - 1000;
+      //   node.position.x = node.position.x - 1000;
+      //   console.log('hola bon dia?');
+      // }
 
       // update dagre
       this.dagreGraph.setNode(node.id, node);

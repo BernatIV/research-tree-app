@@ -1,7 +1,6 @@
 import {INode} from "./inode.model";
 
-export class MarriedModel implements INode {
-    id: string
+export interface MarriedModel extends INode {
     firstRelation: string;
     secondRelation: string;
 }

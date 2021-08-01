@@ -1,7 +1,6 @@
 import {INode} from "./inode.model";
 
-export class PersonModel implements INode {
-    id: string;
+export interface PersonModel extends INode {
     name: string;
     firstSurname: string;
     secondSurname: string;
@@ -11,5 +10,4 @@ export class PersonModel implements INode {
     backgroundColor: string;
     parentNode?: string;
     currentCouple?: string
-
 }

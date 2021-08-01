@@ -2,40 +2,28 @@ import {Component, Input, OnInit} from '@angular/core';
 import {
     Edge,
     Node,
-    Layout, DagreLayout
+    Layout, DagreLayout, DagreClusterLayout
 } from "@swimlane/ngx-graph";
 import * as shape from 'd3-shape';
 import {PersonModel} from "../shared/person.model";
 import {DagreNodesOnlyLayout} from "./customDagreNodesOnly";
+import {FamilyMembersService} from "../services/familyMembers.service";
 
 /**
  * Millor llibreria del món:
  * https://swimlane.github.io/ngx-graph/
  */
 
-export class FamilyNode {
-    id: string;
-    name: string;
-    firstSurname: string;
-    secondSurname: string;
-    llocNaixement: string;
-    llocMort?: string;
-    role: string;
-    backgroundColor: string;
-    parentNode?: string;
-}
-
 @Component({
     selector: 'app-graph',
     templateUrl: './graph.component.html',
-    styleUrls: ['./graph.component.scss']
+    styleUrls: ['./graph.component.scss'],
+    providers: [FamilyMembersService]
 })
 export class GraphComponent implements OnInit {
 
-    @Input() employees: FamilyNode[] = [];
+    // @Input() employees: FamilyNode[] = [];
     @Input() familyMembers: PersonModel[] = [];
-
-    public readonly NODE_COLOR:string = '#B6C6A0';
 
     public nodes: Node[] = [];
     public links: Edge[] = [];
@@ -44,151 +32,14 @@ export class GraphComponent implements OnInit {
     };
     // public curve: any = shape.curveLinear;
     public layout: Layout = new DagreNodesOnlyLayout();
+    // public layout: Layout = new DagreClusterLayout();
     // public layout: Layout = new DagreLayout();
 
-    constructor() {
-        this.familyMembers = [
-            {
-                id: '1',
-                name: 'Pilar',
-                firstSurname: 'Casanovas',
-                secondSurname: 'Casals',
-                llocNaixement: 'Olesa de Montserrat',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '3',
-                currentCouple: '7'
-            },
-            {
-                id: '7',
-                name: 'Josep',
-                firstSurname: 'Mañé',
-                secondSurname: 'Orriols',
-                llocNaixement: 'BCN 29-03-1924',
-                llocDefuncio: 'BCN 21-08-1985',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                currentCouple: '1'
-            },
-            {
-                id: '2',
-                name: 'Manel',
-                firstSurname: 'Casanovas',
-                secondSurname: 'Casals',
-                llocNaixement: 'Olesa de Montserrat',
-                llocDefuncio: 'Barcelona',
-                role: 'Sacerdot',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '3'
-            },
-            {
-                id: '3',
-                name: 'Carme',
-                firstSurname: 'Casals',
-                secondSurname: 'Palet',
-                llocNaixement: 'BCN 4-2-1904',
-                llocDefuncio: 'BCN 1986',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-            },
-            {
-                id: '4',
-                name: 'Jordi',
-                firstSurname: 'Mañé',
-                secondSurname: 'Casanovas',
-                llocNaixement: 'BCN 28-04-1954',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '1'
-            },
-            {
-                id: '5',
-                name: 'Montserrat',
-                firstSurname: 'Mañé',
-                secondSurname: 'Casanovas',
-                llocNaixement: 'BCN 28-03-1963',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '1'
-            },
-            {
-                id: '6',
-                name: 'Anna',
-                firstSurname: 'Mañé',
-                secondSurname: 'Casanovas',
-                llocNaixement: 'BCN 03-09-1969',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '1'
-            }
-        ];
-
-        this.employees = [
-            {
-                id: '1',
-                name: 'Pilar',
-                firstSurname: 'Casanovas',
-                secondSurname: 'Casals',
-                llocNaixement: 'Olesa de Montserrat',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '3'
-            },
-            {
-                id: '2',
-                name: 'Manel',
-                firstSurname: 'Casanovas',
-                secondSurname: 'Casals',
-                llocNaixement: 'Olesa de Montserrat',
-                llocMort: 'Barcelona',
-                role: 'Sacerdot',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '3'
-            },
-            {
-                id: '3',
-                name: 'Carme',
-                firstSurname: 'Casals',
-                secondSurname: 'Palet',
-                llocNaixement: 'BCN 4-2-1904',
-                llocMort: 'BCN 1986',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-            },
-            {
-                id: '4',
-                name: 'Jordi',
-                firstSurname: 'Mañé',
-                secondSurname: 'Casanovas',
-                llocNaixement: 'BCN 28-04-1954',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '1'
-            },
-            {
-                id: '5',
-                name: 'Montserrat',
-                firstSurname: 'Mañé',
-                secondSurname: 'Casanovas',
-                llocNaixement: 'BCN 28-03-1963',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '1'
-            },
-            {
-                id: '6',
-                name: 'Anna',
-                firstSurname: 'Mañé',
-                secondSurname: 'Casanovas',
-                llocNaixement: 'BCN 03-09-1969',
-                role: '',
-                backgroundColor: this.NODE_COLOR,
-                parentNode: '1'
-            }
-        ];
-    }
+    constructor(private familyMembersService: FamilyMembersService) {}
 
     public ngOnInit(): void {
+        this.familyMembers = this.familyMembersService.familyMembers;
+
         for (const member of this.familyMembers) {
             const node: Node = {
                 id: member.id,
@@ -236,10 +87,13 @@ export class GraphComponent implements OnInit {
      */
 
     private buildCoupleRelation() {
+        console.log('building couple relations');
         for (const member of this.familyMembers) {
             if (!member.currentCouple) {
                 continue;
             }
+
+            // TODO: crear un node entremig d'on pengin els fills?
 
             const edge: Edge = {
                 source: member.id,
@@ -247,7 +101,7 @@ export class GraphComponent implements OnInit {
                 label: '',
                 data: {
                     isCoupleRelation: true,
-                    linkText: ''
+                    linkText: 'Montserrat'
                 }
             };
             this.links.push(edge);
